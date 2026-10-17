@@ -33,6 +33,8 @@ python3 main.py
 
 Use `python3 main.py --help` to see the available options.
 
+`python3 main.py --version` (or `-v`) displays the development version.
+
 ## Planned Features
 
 - Seven read-only diagnostic areas: OS and kernel, hardware, GPU and drivers, wireless and Bluetooth, audio, network, and security.

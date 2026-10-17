@@ -1,8 +1,10 @@
 import unittest
+from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from main import parse_arguments, resolve_language
+from main import build_parser, parse_arguments, resolve_language
 from modules.os_info import (
     SystemInfo,
     collect_system_info,
@@ -65,6 +67,25 @@ class LanguageTests(unittest.TestCase):
         )
         self.assertEqual(arguments.language, "de")
         self.assertEqual(language, "de")
+
+    def test_german_help_translates_argparse_labels(self):
+        help_text = build_parser("de").format_help()
+        self.assertIn("Verwendung:", help_text)
+        self.assertIn("Optionen:", help_text)
+        self.assertIn("Diese Hilfe anzeigen und beenden.", help_text)
+
+    def test_invalid_language_error_is_localized(self):
+        error_output = StringIO()
+        with redirect_stderr(error_output):
+            with self.assertRaises(SystemExit) as raised:
+                parse_arguments(["--language", "fr"], {"LANG": "de_DE.UTF-8"})
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("Argument --language", error_output.getvalue())
+        self.assertIn("ungültige Auswahl", error_output.getvalue())
+
+    def test_short_version_flag_is_available(self):
+        arguments, _ = parse_arguments(["-v"], {"LANG": "en_US.UTF-8"})
+        self.assertTrue(arguments.version)
 
 
 class SystemInfoPresentationTests(unittest.TestCase):

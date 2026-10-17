@@ -33,6 +33,8 @@ python3 main.py
 
 `python3 main.py --help` zeigt die verfügbaren Optionen an.
 
+`python3 main.py --version` (oder `-v`) zeigt die Entwicklungsversion an.
+
 ## Geplante Funktionen
 
 - Sieben nur lesende Diagnosebereiche: Betriebssystem und Kernel, Hardware, GPU und Treiber, WLAN und Bluetooth, Audio, Netzwerk sowie Sicherheit.

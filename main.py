@@ -31,6 +31,48 @@ BANNER = r"""  _     ___ ____ ___ ____
  |_____|___|_|  |___|____/"""
 
 
+class LocalizedHelpFormatter(argparse.HelpFormatter):
+    def __init__(self, *args, language: str, **kwargs):
+        self.language = language
+        super().__init__(*args, **kwargs)
+
+    def _format_usage(self, usage, actions, groups, prefix):
+        result = super()._format_usage(usage, actions, groups, prefix)
+        if self.language == "de":
+            return result.replace("usage:", "Verwendung:", 1)
+        return result
+
+
+class LocalizedArgumentParser(argparse.ArgumentParser):
+    def __init__(self, language: str, **kwargs):
+        self.language = language
+        formatter_class = lambda **options: LocalizedHelpFormatter(
+            language=language, **options
+        )
+        super().__init__(formatter_class=formatter_class, add_help=False, **kwargs)
+        if language == "de":
+            self._optionals.title = "Optionen"
+
+    def error(self, message: str) -> None:
+        if self.language == "de":
+            translations = (
+                ("argument ", "Argument "),
+                ("invalid choice:", "ungültige Auswahl:"),
+                (" (choose from ", " (zulässige Werte: "),
+                ("unrecognized arguments:", "unbekannte Argumente:"),
+                ("expected one argument", "ein Argument wird erwartet"),
+                (
+                    "the following arguments are required:",
+                    "folgende Argumente sind erforderlich:",
+                ),
+            )
+            for source, translated in translations:
+                message = message.replace(source, translated)
+            self.print_usage(sys.stderr)
+            self.exit(2, "{}: Fehler: {}\n".format(self.prog, message))
+        super().error(message)
+
+
 def resolve_language(
     requested: Optional[str], environ: Optional[Dict[str, str]] = None
 ) -> str:
@@ -57,9 +99,20 @@ def resolve_language(
 
 def build_parser(language: str) -> argparse.ArgumentParser:
     text = TEXT[language]
-    parser = argparse.ArgumentParser(
+    parser = LocalizedArgumentParser(
+        language=language,
         prog="lipis",
         description=text["description"],
+    )
+    parser.add_argument(
+        "-h",
+        "--help",
+        action="help",
+        help=(
+            "Show this help message and exit."
+            if language == "en"
+            else "Diese Hilfe anzeigen und beenden."
+        ),
     )
     parser.add_argument(
         "--language",
@@ -67,6 +120,7 @@ def build_parser(language: str) -> argparse.ArgumentParser:
         help=text["language_help"],
     )
     parser.add_argument(
+        "-v",
         "--version",
         action="store_true",
         help=(
@@ -82,12 +136,21 @@ def parse_arguments(
     arguments: Optional[Sequence[str]] = None,
     environ: Optional[Dict[str, str]] = None,
 ) -> Tuple[argparse.Namespace, str]:
-    selector = argparse.ArgumentParser(add_help=False)
-    selector.add_argument("--language", choices=("en", "de"))
-    selected, _ = selector.parse_known_args(arguments)
-    language = resolve_language(selected.language, environ)
+    provided_arguments = list(sys.argv[1:] if arguments is None else arguments)
+    requested_language = None
+    for index, argument in enumerate(provided_arguments):
+        if argument == "--language" and index + 1 < len(provided_arguments):
+            candidate = provided_arguments[index + 1]
+        elif argument.startswith("--language="):
+            candidate = argument.split("=", 1)[1]
+        else:
+            continue
+        if candidate in ("en", "de"):
+            requested_language = candidate
+
+    language = resolve_language(requested_language, environ)
     parser = build_parser(language)
-    return parser.parse_args(arguments), language
+    return parser.parse_args(provided_arguments), language
 
 
 def run_diagnostics(language: str) -> None:
