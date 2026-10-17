@@ -14,6 +14,10 @@
 
 > **Project status — `0.1.0`:** First version, tested on WSL 2 and native Xubuntu. The command-line entry point, all seven diagnostic areas, and the optional privacy-filtered Markdown report are implemented.
 
+## About the Project
+
+LIPIS is a hands-on learning project by an independent developer. AI tools assist with development, and changes are tested on WSL 2 and native Xubuntu.
+
 ## Current Features
 
 - Reads distribution details from `/etc/os-release` and uptime from `/proc/uptime`.
