@@ -13,12 +13,8 @@ def _privacy_filter(section: str, language: str) -> Tuple[str, ...]:
     lines = []
     in_warnings = False
     in_network_section = False
+    in_current_filesystem = False
     ssid_label = "Aktuelle SSID:" if language == "de" else "Current SSID:"
-    current_filesystem_labels = (
-        ("Dateisystem des aktuellen Ordners:",)
-        if language == "de"
-        else ("Filesystem of current directory:",)
-    )
 
     for line in section.splitlines():
         stripped = line.strip()
@@ -32,11 +28,20 @@ def _privacy_filter(section: str, language: str) -> Tuple[str, ...]:
             continue
         if in_warnings:
             continue
-        if stripped.startswith(ssid_label):
+        if any(
+            stripped.startswith(label)
+            for label in (
+                "Dateisystem des aktuellen Ordners:",
+                "Filesystem of current directory:",
+            )
+        ):
+            in_current_filesystem = True
             continue
-        if any(stripped.startswith(label) for label in current_filesystem_labels):
-            label = current_filesystem_labels[0]
-            lines.append("  {} [path omitted]".format(label))
+        if in_current_filesystem:
+            if line.startswith("  "):
+                continue
+            in_current_filesystem = False
+        if stripped.startswith(ssid_label):
             continue
         lines.append(line)
     return tuple(lines)

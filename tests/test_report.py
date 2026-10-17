@@ -39,8 +39,14 @@ class ReportRenderingTests(unittest.TestCase):
         report = render_markdown_report(
             (
                 "=== Hardware ===\n"
+                "Linux root filesystem (/): /\n"
+                "  Total: 20 GiB\n"
+                "  Used: 5 GiB\n"
+                "  Free: 15 GiB\n"
                 "Filesystem of current directory: /home/private-user/lipis\n"
-                "  Free: 12.0 GiB\n"
+                "  Total: 20 GiB\n"
+                "  Used: 5 GiB\n"
+                "  Free: 15 GiB\n"
                 "Warnings:\n"
                 "- Could not inspect /home/private-user/lipis\n",
                 "=== Wi-Fi ===\n"
@@ -59,7 +65,9 @@ class ReportRenderingTests(unittest.TestCase):
             datetime(2026, 10, 17, tzinfo=timezone.utc),
         )
 
-        self.assertIn("Filesystem of current directory: [path omitted]", report)
+        self.assertIn("Linux root filesystem (/): /", report)
+        self.assertEqual(report.count("Total: 20 GiB"), 1)
+        self.assertNotIn("Filesystem of current directory", report)
         self.assertIn("Connection: connected", report)
         self.assertIn("No Bluetooth controller found.", report)
         for private_value in (
@@ -76,7 +84,11 @@ class ReportRenderingTests(unittest.TestCase):
         report = render_markdown_report(
             (
                 "=== Hardware ===\n"
-                "Dateisystem des aktuellen Ordners: /home/mubu/lipis\n",
+                "Linux-Root-Dateisystem (/): /\n"
+                "  Gesamt: 20 GiB\n"
+                "Dateisystem des aktuellen Ordners: /home/mubu/lipis\n"
+                "  Gesamt: 20 GiB\n"
+                "  Belegt: 5 GiB\n",
                 "=== WLAN ===\n"
                 "  Aktuelle SSID: MeinWLAN\n",
             ),
@@ -84,11 +96,11 @@ class ReportRenderingTests(unittest.TestCase):
             datetime(2026, 10, 17, tzinfo=timezone.utc),
         )
 
-        self.assertIn(
-            "Dateisystem des aktuellen Ordners: [path omitted]", report
-        )
+        self.assertIn("Linux-Root-Dateisystem (/): /", report)
+        self.assertNotIn("Dateisystem des aktuellen Ordners", report)
         self.assertNotIn("/home/mubu/lipis", report)
         self.assertNotIn("MeinWLAN", report)
+        self.assertEqual(report.count("Gesamt: 20 GiB"), 1)
         self.assertIn("# LIPIS-Diagnosebericht", report)
 
 
