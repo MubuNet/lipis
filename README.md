@@ -12,7 +12,7 @@
 
 **LIPIS** (Linux PostInstall Script) is a read-only diagnostic tool in development for Ubuntu and Debian newcomers.
 
-> **Project status — `0.1.0-dev`:** The command-line entry point, all seven diagnostic areas, and the optional privacy-filtered Markdown report are implemented.
+> **Project status — `0.1.0`:** First version, tested on WSL 2 and native Xubuntu. The command-line entry point, all seven diagnostic areas, and the optional privacy-filtered Markdown report are implemented.
 
 ## Current Features
 
@@ -46,7 +46,7 @@ python3 main.py
 
 Use `python3 main.py --help` to see the available options.
 
-`python3 main.py --version` (or `-v`) displays the development version.
+`python3 main.py --version` (or `-v`) displays the current version.
 
 Use `python3 main.py --report` to also write `lipis_report.md` in the current working directory. If that file already exists, it is replaced.
 

@@ -1,9 +1,10 @@
 import unittest
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import main
 from main import build_parser, parse_arguments, resolve_language
 from modules.os_info import (
     SystemInfo,
@@ -86,6 +87,13 @@ class LanguageTests(unittest.TestCase):
     def test_short_version_flag_is_available(self):
         arguments, _ = parse_arguments(["-v"], {"LANG": "en_US.UTF-8"})
         self.assertTrue(arguments.version)
+
+    def test_version_flag_displays_first_release_version(self):
+        output = StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(main.main(["--version"], {"LANG": "en_US.UTF-8"}), 0)
+
+        self.assertEqual(output.getvalue(), "LIPIS Version 0.1.0\n")
 
 
 class SystemInfoPresentationTests(unittest.TestCase):
