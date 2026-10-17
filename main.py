@@ -6,6 +6,7 @@ import os
 import sys
 from typing import Dict, Optional, Sequence, Tuple
 
+from modules.gpu_driver import collect_gpu_info, render_gpu_info
 from modules.hardware import collect_hardware_info, render_hardware_info
 from modules.os_info import collect_system_info, render_system_info
 
@@ -165,9 +166,10 @@ def parse_arguments(
 
 
 def run_diagnostics(language: str) -> None:
-    """Collect and print the implemented system and hardware diagnostics."""
+    """Collect and print the implemented system, hardware, and GPU diagnostics."""
     system_info = collect_system_info()
     hardware_info = collect_hardware_info()
+    gpu_info = collect_gpu_info()
     print(BANNER)
     print("LIPIS - Linux PostInstall Script")
     print("{}: {}".format(TEXT[language]["version"], VERSION))
@@ -175,6 +177,8 @@ def run_diagnostics(language: str) -> None:
     print(render_system_info(system_info, language))
     print()
     print(render_hardware_info(hardware_info, language, system_info.environment))
+    print()
+    print(render_gpu_info(gpu_info, language, system_info.environment))
 
 
 def main(
