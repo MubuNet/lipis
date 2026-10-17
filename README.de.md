@@ -10,27 +10,20 @@
  |_____|___|_|  |___|____/
 ```
 
-**LIPIS** (Linux PostInstall Script) ist als **vollständig passives, nur lesendes Diagnosewerkzeug** für Linux-Einsteiger unter Ubuntu/Debian geplant. Es soll den Systemzustand, Hardwareinformationen, Netzwerkkonfiguration und Dienste prüfen und daraus einen übersichtlichen, hilfreichen Bericht erstellen – ohne Änderungen am System und ohne `sudo`-Rechte.
+**LIPIS** (Linux PostInstall Script) ist ein Read-Only-Diagnosewerkzeug für Linux-Einsteiger unter Ubuntu und Debian, das sich in Entwicklung befindet.
 
-> **Projektstatus:** LIPIS befindet sich noch in der Planungsphase. Das Script und die unten beschriebenen Dateien gibt es noch nicht; die Beispielbefehle sind daher derzeit noch nicht nutzbar.
+> **Projektstatus — `0.1.0-dev`:** Der Kommandozeilen-Einstiegspunkt und die erste Diagnose für Betriebssystem und Kernel sind implementiert. Die übrigen Diagnosemodule und der Report-Generator sind noch geplant.
 
-## 🛡️ Geplante Grundsätze
+## Bereits verfügbar
 
-- **Vollständig nur lesend:** Keine Änderungen am System, keine Paketinstallationen und keine APT-Änderungen.
-- **Kein Root / kein `sudo` erforderlich:** Das Werkzeug soll sicher mit normalen Benutzerrechten laufen.
-- **Nicht interaktiv:** Die geplante Kommandozeile soll ohne Rückfragen ausgeführt werden können.
-- **Lokal und privat:** Der geplante Bericht soll im aktuellen Verzeichnis als `./lipis_report.md` gespeichert werden.
+- Liest Distributionsinformationen aus `/etc/os-release` und die Laufzeit aus `/proc/uptime`.
+- Zeigt Kernel, Architektur und Laufzeit an und erkennt WSL bzw. WSL 2.
+- Wählt Deutsch oder Englisch anhand der Systemsprache automatisch aus. Mit `--language de` oder `--language en` lässt sich die Auswahl überschreiben. Andere Sprachen verwenden Englisch.
+- Verwendet ausschließlich die Python-Standardbibliothek. Root-Rechte und System-Paketinstallationen sind nicht erforderlich.
 
-## 🚀 Geplanter Schnellstart
+## LIPIS starten
 
-### Voraussetzungen
-
-- Python 3.8 oder höher
-- Eine übliche Linux-Systemumgebung (Ubuntu/Debian empfohlen)
-
-### Vorgesehene Verwendung
-
-Nach der Implementierung soll der geplante Einstiegspunkt voraussichtlich so verwendet werden:
+Voraussetzung: Python 3.8 oder höher unter Linux (Ubuntu/Debian empfohlen).
 
 ```bash
 git clone https://github.com/mubunet/lipis.git
@@ -38,26 +31,28 @@ cd lipis
 python3 main.py
 ```
 
-### Geplante Kommandozeilenoptionen
+`python3 main.py --help` zeigt die verfügbaren Optionen an.
 
-- `python3 main.py --report` (`-r`): Den Diagnosebericht im Markdown-Format unter `./lipis_report.md` erstellen.
-- `python3 main.py --version` (`-v`): Versionsinformationen zu LIPIS anzeigen.
+## Geplante Funktionen
 
-## 📂 Geplante Projektstruktur
+- Sieben nur lesende Diagnosebereiche: Betriebssystem und Kernel, Hardware, GPU und Treiber, WLAN und Bluetooth, Audio, Netzwerk sowie Sicherheit.
+- Eine Live-Terminalanzeige mit dem MubuNet-Banner.
+- Ein optionaler Markdown-Bericht namens `lipis_report.md`, gespeichert im Ordner, aus dem LIPIS gestartet wurde. Hostname, Benutzername und lokale IP-Adressen werden standardmäßig nicht in den Bericht aufgenommen.
+- Optionale Abhängigkeiten für die Darstellung mit Rückfall auf die Python-Standardbibliothek.
+- Spätere betriebssystemspezifische Profile, darunter klar getrennte Kali-spezifische Diagnosen.
+
+## Projektstruktur
 
 ```text
 lipis/
-├── main.py              # Geplanter Kommandozeilen-Einstiegspunkt
-├── README.md            # Projektdokumentation
-├── LICENSE              # MIT-Lizenz
-├── modules/             # Geplante, nur lesende Diagnosemodule
-│   ├── os_info.py       # Distribution, Kernel und Laufzeit
-│   ├── hardware.py      # CPU, RAM, Speicherplatz und Kennzahlen
-│   ├── network.py       # Schnittstellen, IP-Konfiguration und DNS
-│   └── services.py      # Systemd-Dienste und aktive Prozesse
-└── outputs/             # Geplante Berichterstellung und Formatierung
+├── main.py              # Kommandozeilen-Einstiegspunkt
+├── README.md            # Englische Dokumentation
+├── README.de.md         # Deutsche Dokumentation
+├── modules/
+│   └── os_info.py       # Implementierte Diagnose von OS, Kernel und Laufzeit
+└── outputs/             # Geplante Berichterstellung
 ```
 
-## 📄 Lizenz
+## Lizenz
 
 Veröffentlicht unter der **MIT-Lizenz**. Copyright (c) 2026 **MubuNet** (`mubunetofficial@gmail.com`).
