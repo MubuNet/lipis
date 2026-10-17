@@ -9,6 +9,10 @@ from typing import Dict, Optional, Sequence, Tuple
 from modules.gpu_driver import collect_gpu_info, render_gpu_info
 from modules.hardware import collect_hardware_info, render_hardware_info
 from modules.os_info import collect_system_info, render_system_info
+from modules.wireless_bluetooth import (
+    collect_wireless_bluetooth_info,
+    render_wireless_bluetooth_info,
+)
 
 
 VERSION = "0.1.0-dev"
@@ -166,10 +170,11 @@ def parse_arguments(
 
 
 def run_diagnostics(language: str) -> None:
-    """Collect and print the implemented system, hardware, and GPU diagnostics."""
+    """Collect and print all implemented read-only system diagnostics."""
     system_info = collect_system_info()
     hardware_info = collect_hardware_info()
     gpu_info = collect_gpu_info()
+    wireless_bluetooth_info = collect_wireless_bluetooth_info()
     print(BANNER)
     print("LIPIS - Linux PostInstall Script")
     print("{}: {}".format(TEXT[language]["version"], VERSION))
@@ -179,6 +184,12 @@ def run_diagnostics(language: str) -> None:
     print(render_hardware_info(hardware_info, language, system_info.environment))
     print()
     print(render_gpu_info(gpu_info, language, system_info.environment))
+    print()
+    print(
+        render_wireless_bluetooth_info(
+            wireless_bluetooth_info, language, system_info.environment
+        )
+    )
 
 
 def main(

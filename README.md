@@ -12,7 +12,7 @@
 
 **LIPIS** (Linux PostInstall Script) is a read-only diagnostic tool in development for Ubuntu and Debian newcomers.
 
-> **Project status — `0.1.0-dev`:** The command-line entry point and the OS/kernel, basic hardware, and GPU/driver diagnostics are implemented. The remaining diagnostic modules and report generator are still planned.
+> **Project status — `0.1.0-dev`:** The command-line entry point and the OS/kernel, basic hardware, GPU/driver, and Wi-Fi/Bluetooth diagnostics are implemented. The remaining diagnostic modules and report generator are still planned.
 
 ## Current Features
 
@@ -22,6 +22,9 @@
 - Labels WSL hardware and filesystem figures as values reported by the WSL environment. When run from `/mnt/c`, the current-directory filesystem shows the mounted Windows `C:` volume separately from WSL's Linux root filesystem.
 - Detects NVIDIA, AMD, and Intel graphics devices from PCI system information, reports the active kernel driver when identifiable, and uses `nvidia-smi` only when already installed.
 - Clearly labels WSL GPU information and does not infer the host GPU model from the WSL GPU interface alone.
+- Reports Wi-Fi interfaces, driver, interface/connection status, and only the SSID of the current connection. It does not scan for nearby networks.
+- Reports Bluetooth controllers, drivers, and power status without scanning for or listing paired devices.
+- Uses sysfs and optional preinstalled tools (`iw`, `nmcli`, `rfkill`, and `bluetoothctl`) for wireless diagnostics; it does not install software or require root access. WSL limitations are clearly identified.
 - Automatically selects English or German from the system locale; use `--language en` or `--language de` to override it. Other locales fall back to English.
 - Uses only the Python standard library. No root privileges or system package installations are required.
 
@@ -41,7 +44,7 @@ Use `python3 main.py --help` to see the available options.
 
 ## Planned Features
 
-- Remaining read-only diagnostic areas: wireless and Bluetooth, audio, network, and security.
+- Remaining read-only diagnostic areas: audio, network, and security.
 - A live terminal display with the MubuNet banner.
 - An optional Markdown report named `lipis_report.md`, saved in the directory from which LIPIS is started. Hostname, username, and local IP addresses will be omitted from the report by default.
 - Optional presentation dependencies with a standard-library fallback.
@@ -57,7 +60,8 @@ lipis/
 ├── modules/
 │   ├── os_info.py       # OS, kernel, and uptime diagnostics
 │   ├── hardware.py      # CPU, memory, and filesystem diagnostics
-│   └── gpu_driver.py    # GPU and active driver diagnostics
+│   ├── gpu_driver.py    # GPU and active driver diagnostics
+│   └── wireless_bluetooth.py # Wi-Fi and Bluetooth diagnostics
 └── outputs/             # Planned report generation
 ```
 
