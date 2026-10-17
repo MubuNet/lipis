@@ -1,0 +1,108 @@
+############################################
+# MubuNet / LIPIS - Linux Postinstall Script
+############################################
+
+# Virtuelle Umgebung
+venv/
+.venv/
+.env/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Temp & Cache
+temp/
+cache/
+*.log
+*.tmp
+
+########################################
+# Audio & Video (global ignorieren)
+########################################
+
+# Audio
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.aiff
+
+# Video
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+
+
+########################################
+# Bilder (global ignorieren, außer Logo)
+########################################
+
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.svg
+*.psd
+*.ai
+
+# Ausnahme: Logo behalten
+!**/logo.png
+!**/logo_full.png
+!**/logo.svg
+!**/favicon.png
+
+
+########################################
+# Datenbanken (niemals versionieren)
+########################################
+
+*.db
+*.sqlite
+*.sqlite3
+
+# Private Masterbrain-Chat-Anhänge (niemals versionieren)
+/01_MCC_Core/masterbrain_chat_attachments/
+
+# Spezifische DBs
+
+
+########################################
+# Secrets & Configs
+########################################
+
+config.json
+*.secret
+*.key
+gemini.key
+*.pem
+*.env
+
+
+
+########################################
+# OS & Editor Artefakte
+########################################
+
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# SQLite-Nebendateien
+*.db-wal
+*.db-shm
+*.sqlite-journal
+
+# Env-Datei explizit
+.env
+
+# Test-/Coverage-Artefakte, falls später relevant
+.pytest_cache/
+.coverage
+htmlcov/
