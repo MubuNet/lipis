@@ -12,7 +12,7 @@
 
 **LIPIS** (Linux PostInstall Script) ist ein Read-Only-Diagnosewerkzeug für Linux-Einsteiger unter Ubuntu und Debian, das sich in Entwicklung befindet.
 
-> **Projektstatus — `0.1.0-dev`:** Der Kommandozeilen-Einstiegspunkt sowie die Basisdiagnosen für Betriebssystem/Kernel, Hardware, GPU/Treiber, WLAN/Bluetooth, Audio und Netzwerk sind implementiert. Sicherheitsdiagnosen und Report-Generator sind noch geplant.
+> **Projektstatus — `0.1.0-dev`:** Der Kommandozeilen-Einstiegspunkt sowie die Basisdiagnosen für Betriebssystem/Kernel, Hardware, GPU/Treiber, WLAN/Bluetooth, Audio, Netzwerk und Sicherheit sind implementiert. Der Report-Generator ist noch geplant.
 
 ## Bereits verfügbar
 
@@ -28,6 +28,8 @@
 - Zeigt ALSA-Audiokarten und Treiber an und prüft optionale PulseAudio-/PipeWire-Clients, ohne Lautsprecher-, Mikrofon- oder Headset-Namen auszugeben. Die WSLg-Audio-Weiterleitung wird getrennt angezeigt und nicht als Erkennung von Windows-Audiogeräten ausgegeben.
 - Zeigt Status, MAC- und IP-Adressen von Linux-Netzwerkschnittstellen sowie Standard-Gateways und DNS-Server ausschließlich aus lokaler Systemkonfiguration an; aktive Verbindungstests finden nicht statt. Diese Werte erscheinen im Terminal, werden aber aus dem geplanten Markdown-Bericht ausgeschlossen.
 - Kennzeichnet Netzwerkangaben unter WSL als virtuelle Linux-Sicht und leitet daraus keine Windows-Netzwerkadapter ab.
+- Zeigt laut lokalem APT-Cache verfügbare Sicherheitsupdates, den Status vorhandener Firewalls sowie AppArmor/SELinux, ASLR, Secure Boot und Kernel-Lockdown an, sofern diese Werte ermittelbar sind. Der Paket-Cache kann veraltet sein; LIPIS aktualisiert keine Paketlisten, benötigt keine Root-Rechte, installiert keine Pakete und ändert keine Systemeinstellungen. Unbekannte oder unzugängliche Werte gelten nicht als Sicherheitsfehler.
+- Kennzeichnet Sicherheitswerte unter WSL als Linux-/WSL-Status und leitet keine Schutzmechanismen des Windows-Hosts ab. Detaillierte Sicherheitsbefunde sind für den geplanten Report vorgesehen; Netzwerkkennungen und -konfiguration bleiben darin ausgeschlossen.
 - Wählt Deutsch oder Englisch anhand der Systemsprache automatisch aus. Mit `--language de` oder `--language en` lässt sich die Auswahl überschreiben. Andere Sprachen verwenden Englisch.
 - Verwendet ausschließlich die Python-Standardbibliothek. Root-Rechte und System-Paketinstallationen sind nicht erforderlich.
 
@@ -47,9 +49,8 @@ python3 main.py
 
 ## Geplante Funktionen
 
-- Noch geplanter Diagnosebereich: Sicherheit.
 - Eine Live-Terminalanzeige mit dem MubuNet-Banner.
-- Ein optionaler Markdown-Bericht namens `lipis_report.md`, gespeichert im Ordner, aus dem LIPIS gestartet wurde. Hostname, Benutzername und lokale IP-Adressen werden standardmäßig nicht in den Bericht aufgenommen.
+- Ein optionaler Markdown-Bericht namens `lipis_report.md`, gespeichert im Ordner, aus dem LIPIS gestartet wurde. Detaillierte Sicherheitsbefunde können enthalten sein; Hostname, Benutzername und Netzwerkkennungen/-konfiguration werden standardmäßig ausgelassen.
 - Optionale Abhängigkeiten für die Darstellung mit Rückfall auf die Python-Standardbibliothek.
 - Spätere betriebssystemspezifische Profile, darunter klar getrennte Kali-spezifische Diagnosen.
 
@@ -66,7 +67,8 @@ lipis/
 │   ├── gpu_driver.py    # Diagnose von GPU und aktivem Treiber
 │   ├── wireless_bluetooth.py # WLAN- und Bluetooth-Diagnose
 │   ├── audio.py         # Diagnose von Audiohardware und Audiostacks
-│   └── network.py       # Diagnose lokaler Netzwerkkonfiguration
+│   ├── network.py       # Diagnose lokaler Netzwerkkonfiguration
+│   └── security.py      # Read-Only-Sicherheitsdiagnose
 └── outputs/             # Geplante Berichterstellung
 ```
 
