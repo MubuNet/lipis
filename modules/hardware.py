@@ -9,6 +9,8 @@ from typing import Dict, List, Optional, Tuple
 
 @dataclass(frozen=True)
 class FilesystemInfo:
+    """Capacity and usage values for one mounted filesystem path."""
+
     path: str
     total_bytes: int
     used_bytes: int
@@ -17,6 +19,8 @@ class FilesystemInfo:
 
 @dataclass(frozen=True)
 class HardwareInfo:
+    """Collected CPU, memory, and filesystem values with read warnings."""
+
     cpu_model: Optional[str]
     logical_cpus: Optional[int]
     memory_total_bytes: Optional[int]
@@ -27,6 +31,7 @@ class HardwareInfo:
 
 
 def parse_cpu_info(contents: str) -> Tuple[Optional[str], Optional[int]]:
+    """Extract a CPU model and logical processor count from procfs text."""
     cpu_model = None
     logical_cpus = 0
 
@@ -47,6 +52,7 @@ def parse_cpu_info(contents: str) -> Tuple[Optional[str], Optional[int]]:
 
 
 def parse_memory_info(contents: str) -> Dict[str, int]:
+    """Parse Linux meminfo fields and convert kB values to bytes."""
     memory: Dict[str, int] = {}
     for line in contents.splitlines():
         if ":" not in line:
@@ -71,6 +77,7 @@ def collect_hardware_info(
     disk_path: Path = Path("/"),
     current_directory_path: Optional[Path] = None,
 ) -> HardwareInfo:
+    """Collect read-only CPU, memory, root, and current-directory statistics."""
     warnings: List[str] = []
 
     cpu_model: Optional[str] = None
@@ -100,6 +107,7 @@ def collect_hardware_info(
         current_directory_path = Path.cwd()
 
     def filesystem_info(path: Path) -> Optional[FilesystemInfo]:
+        """Read usage for a path or record a warning if it is unavailable."""
         try:
             usage = shutil.disk_usage(path)
         except OSError as error:
@@ -127,6 +135,7 @@ def collect_hardware_info(
 
 
 def format_size(byte_count: int) -> str:
+    """Format a byte count as gibibytes with one decimal place."""
     gibibytes = byte_count / (1024 ** 3)
     return "{:.1f} GiB".format(gibibytes)
 
@@ -136,6 +145,7 @@ def render_hardware_info(
     language: str,
     environment: str,
 ) -> str:
+    """Render hardware and both filesystem summaries in the selected language."""
     if language == "de":
         labels = {
             "section": "Hardware",
@@ -176,6 +186,7 @@ def render_hardware_info(
         }
 
     def memory_value(value: Optional[int]) -> str:
+        """Format a memory value, marking missing data as unavailable."""
         if value is None:
             return labels["unavailable"]
         return format_size(value)

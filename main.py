@@ -33,11 +33,15 @@ BANNER = r"""  _     ___ ____ ___ ____
 
 
 class LocalizedHelpFormatter(argparse.HelpFormatter):
+    """Format command-line help with localized usage labels."""
+
     def __init__(self, *args, language: str, **kwargs):
+        """Initialize the formatter for the selected language."""
         self.language = language
         super().__init__(*args, **kwargs)
 
     def _format_usage(self, usage, actions, groups, prefix):
+        """Return the usage line with a translated prefix when needed."""
         result = super()._format_usage(usage, actions, groups, prefix)
         if self.language == "de":
             return result.replace("usage:", "Verwendung:", 1)
@@ -45,7 +49,10 @@ class LocalizedHelpFormatter(argparse.HelpFormatter):
 
 
 class LocalizedArgumentParser(argparse.ArgumentParser):
+    """Parse CLI arguments and localize help and validation errors."""
+
     def __init__(self, language: str, **kwargs):
+        """Initialize a parser configured for English or German."""
         self.language = language
         formatter_class = lambda **options: LocalizedHelpFormatter(
             language=language, **options
@@ -55,6 +62,7 @@ class LocalizedArgumentParser(argparse.ArgumentParser):
             self._optionals.title = "Optionen"
 
     def error(self, message: str) -> None:
+        """Print a localized argument error and exit with argparse's error code."""
         if self.language == "de":
             translations = (
                 ("argument ", "Argument "),
@@ -99,6 +107,7 @@ def resolve_language(
 
 
 def build_parser(language: str) -> argparse.ArgumentParser:
+    """Build the command-line parser for the selected display language."""
     text = TEXT[language]
     parser = LocalizedArgumentParser(
         language=language,
@@ -137,6 +146,7 @@ def parse_arguments(
     arguments: Optional[Sequence[str]] = None,
     environ: Optional[Dict[str, str]] = None,
 ) -> Tuple[argparse.Namespace, str]:
+    """Parse CLI arguments, selecting explicit language before system locale."""
     provided_arguments = list(sys.argv[1:] if arguments is None else arguments)
     requested_language = None
     for index, argument in enumerate(provided_arguments):
@@ -155,6 +165,7 @@ def parse_arguments(
 
 
 def run_diagnostics(language: str) -> None:
+    """Collect and print the implemented system and hardware diagnostics."""
     system_info = collect_system_info()
     hardware_info = collect_hardware_info()
     print(BANNER)
@@ -170,6 +181,7 @@ def main(
     arguments: Optional[Sequence[str]] = None,
     environ: Optional[Dict[str, str]] = None,
 ) -> int:
+    """Run the CLI and return its process exit status."""
     args, language = parse_arguments(arguments, environ)
     if args.version:
         print("LIPIS {} {}".format(TEXT[language]["version"], VERSION))

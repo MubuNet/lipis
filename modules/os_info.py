@@ -11,6 +11,8 @@ from typing import Dict, List, Mapping, Optional, Tuple
 
 @dataclass(frozen=True)
 class SystemInfo:
+    """Collected OS, kernel, environment, and uptime values."""
+
     distribution: str
     kernel: str
     architecture: str
@@ -33,6 +35,7 @@ def parse_os_release(contents: str) -> Dict[str, str]:
 
 
 def format_uptime(seconds: int, language: str) -> str:
+    """Format uptime seconds as a localized days/hours/minutes string."""
     if seconds < 60:
         return "<1 minute" if language == "en" else "<1 Minute"
 
@@ -60,6 +63,7 @@ def format_uptime(seconds: int, language: str) -> str:
 def detect_environment(
     kernel: str, environ: Optional[Mapping[str, str]] = None
 ) -> str:
+    """Identify Linux, WSL, or WSL 2 from kernel and environment markers."""
     environment = os.environ if environ is None else environ
     lowered_kernel = kernel.lower()
     is_wsl = (
@@ -80,6 +84,7 @@ def collect_system_info(
     uptime_path: Path = Path("/proc/uptime"),
     environ: Optional[Mapping[str, str]] = None,
 ) -> SystemInfo:
+    """Read OS metadata and uptime, returning warnings for unavailable data."""
     warnings: List[str] = []
     release_values: Dict[str, str] = {}
     try:
@@ -125,6 +130,7 @@ def collect_system_info(
 
 
 def render_system_info(info: SystemInfo, language: str) -> str:
+    """Render collected system values as localized terminal text."""
     if language == "de":
         labels = {
             "section": "System",
