@@ -12,7 +12,7 @@
 
 **LIPIS** (Linux PostInstall Script) ist ein Read-Only-Diagnosewerkzeug für Linux-Einsteiger unter Ubuntu und Debian, das sich in Entwicklung befindet.
 
-> **Projektstatus — `0.1.0-dev`:** Der Kommandozeilen-Einstiegspunkt sowie die Basisdiagnosen für Betriebssystem/Kernel, Hardware, GPU/Treiber und WLAN/Bluetooth sind implementiert. Die übrigen Diagnosemodule und der Report-Generator sind noch geplant.
+> **Projektstatus — `0.1.0-dev`:** Der Kommandozeilen-Einstiegspunkt sowie die Basisdiagnosen für Betriebssystem/Kernel, Hardware, GPU/Treiber, WLAN/Bluetooth und Audio sind implementiert. Die übrigen Diagnosemodule und der Report-Generator sind noch geplant.
 
 ## Bereits verfügbar
 
@@ -25,6 +25,7 @@
 - Zeigt WLAN-Schnittstellen, Treiber, Schnittstellen-/Verbindungsstatus und nur die SSID der aktuellen Verbindung an. Eine Suche nach benachbarten WLANs findet nicht statt.
 - Zeigt Bluetooth-Controller, Treiber und Einschaltstatus an, ohne nach Geräten zu suchen oder gekoppelte Geräte aufzulisten.
 - Verwendet sysfs und optionale, bereits installierte Werkzeuge (`iw`, `nmcli`, `rfkill` und `bluetoothctl`) für Funkdiagnosen. Es werden keine Pakete installiert und keine Root-Rechte benötigt. WSL-Einschränkungen werden klar gekennzeichnet.
+- Zeigt ALSA-Audiokarten und Treiber an und prüft optionale PulseAudio-/PipeWire-Clients, ohne Lautsprecher-, Mikrofon- oder Headset-Namen auszugeben. Die WSLg-Audio-Weiterleitung wird getrennt angezeigt und nicht als Erkennung von Windows-Audiogeräten ausgegeben.
 - Wählt Deutsch oder Englisch anhand der Systemsprache automatisch aus. Mit `--language de` oder `--language en` lässt sich die Auswahl überschreiben. Andere Sprachen verwenden Englisch.
 - Verwendet ausschließlich die Python-Standardbibliothek. Root-Rechte und System-Paketinstallationen sind nicht erforderlich.
 
@@ -44,7 +45,7 @@ python3 main.py
 
 ## Geplante Funktionen
 
-- Noch geplante Diagnosebereiche: Audio, Netzwerk sowie Sicherheit.
+- Noch geplante Diagnosebereiche: Netzwerk sowie Sicherheit.
 - Eine Live-Terminalanzeige mit dem MubuNet-Banner.
 - Ein optionaler Markdown-Bericht namens `lipis_report.md`, gespeichert im Ordner, aus dem LIPIS gestartet wurde. Hostname, Benutzername und lokale IP-Adressen werden standardmäßig nicht in den Bericht aufgenommen.
 - Optionale Abhängigkeiten für die Darstellung mit Rückfall auf die Python-Standardbibliothek.
@@ -61,7 +62,8 @@ lipis/
 │   ├── os_info.py       # Diagnose von OS, Kernel und Laufzeit
 │   ├── hardware.py      # Diagnose von CPU, Arbeitsspeicher und Dateisystemen
 │   ├── gpu_driver.py    # Diagnose von GPU und aktivem Treiber
-│   └── wireless_bluetooth.py # WLAN- und Bluetooth-Diagnose
+│   ├── wireless_bluetooth.py # WLAN- und Bluetooth-Diagnose
+│   └── audio.py         # Diagnose von Audiohardware und Audiostacks
 └── outputs/             # Geplante Berichterstellung
 ```
 

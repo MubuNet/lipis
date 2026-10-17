@@ -12,7 +12,7 @@
 
 **LIPIS** (Linux PostInstall Script) is a read-only diagnostic tool in development for Ubuntu and Debian newcomers.
 
-> **Project status — `0.1.0-dev`:** The command-line entry point and the OS/kernel, basic hardware, GPU/driver, and Wi-Fi/Bluetooth diagnostics are implemented. The remaining diagnostic modules and report generator are still planned.
+> **Project status — `0.1.0-dev`:** The command-line entry point and the OS/kernel, basic hardware, GPU/driver, Wi-Fi/Bluetooth, and audio diagnostics are implemented. The remaining diagnostic modules and report generator are still planned.
 
 ## Current Features
 
@@ -25,6 +25,7 @@
 - Reports Wi-Fi interfaces, driver, interface/connection status, and only the SSID of the current connection. It does not scan for nearby networks.
 - Reports Bluetooth controllers, drivers, and power status without scanning for or listing paired devices.
 - Uses sysfs and optional preinstalled tools (`iw`, `nmcli`, `rfkill`, and `bluetoothctl`) for wireless diagnostics; it does not install software or require root access. WSL limitations are clearly identified.
+- Reports ALSA audio cards and drivers and checks optional PulseAudio/PipeWire clients without displaying speaker, microphone, or headset names. WSLg audio forwarding is reported separately and does not imply detection of Windows audio hardware.
 - Automatically selects English or German from the system locale; use `--language en` or `--language de` to override it. Other locales fall back to English.
 - Uses only the Python standard library. No root privileges or system package installations are required.
 
@@ -44,7 +45,7 @@ Use `python3 main.py --help` to see the available options.
 
 ## Planned Features
 
-- Remaining read-only diagnostic areas: audio, network, and security.
+- Remaining read-only diagnostic areas: network and security.
 - A live terminal display with the MubuNet banner.
 - An optional Markdown report named `lipis_report.md`, saved in the directory from which LIPIS is started. Hostname, username, and local IP addresses will be omitted from the report by default.
 - Optional presentation dependencies with a standard-library fallback.
@@ -61,7 +62,8 @@ lipis/
 │   ├── os_info.py       # OS, kernel, and uptime diagnostics
 │   ├── hardware.py      # CPU, memory, and filesystem diagnostics
 │   ├── gpu_driver.py    # GPU and active driver diagnostics
-│   └── wireless_bluetooth.py # Wi-Fi and Bluetooth diagnostics
+│   ├── wireless_bluetooth.py # Wi-Fi and Bluetooth diagnostics
+│   └── audio.py         # Audio hardware and server diagnostics
 └── outputs/             # Planned report generation
 ```
 

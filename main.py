@@ -6,6 +6,7 @@ import os
 import sys
 from typing import Dict, Optional, Sequence, Tuple
 
+from modules.audio import collect_audio_info, render_audio_info
 from modules.gpu_driver import collect_gpu_info, render_gpu_info
 from modules.hardware import collect_hardware_info, render_hardware_info
 from modules.os_info import collect_system_info, render_system_info
@@ -175,6 +176,7 @@ def run_diagnostics(language: str) -> None:
     hardware_info = collect_hardware_info()
     gpu_info = collect_gpu_info()
     wireless_bluetooth_info = collect_wireless_bluetooth_info()
+    audio_info = collect_audio_info()
     print(BANNER)
     print("LIPIS - Linux PostInstall Script")
     print("{}: {}".format(TEXT[language]["version"], VERSION))
@@ -190,6 +192,8 @@ def run_diagnostics(language: str) -> None:
             wireless_bluetooth_info, language, system_info.environment
         )
     )
+    print()
+    print(render_audio_info(audio_info, language, system_info.environment))
 
 
 def main(
