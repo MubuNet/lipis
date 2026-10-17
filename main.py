@@ -45,7 +45,8 @@ BANNER = r"""  _     ___ ____ ___ ____
  | |   |_ _|  _ \_ _/ ___|
  | |    | | | _) | |\___ \
  | |___ | | | __/| | ___) |
- |_____|___|_|  |___|____/"""
+ |_____|___|_|  |___|____/
+       Powered by MubuNet"""
 
 
 class LocalizedHelpFormatter(argparse.HelpFormatter):

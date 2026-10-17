@@ -174,6 +174,8 @@ class AudioPresentationTests(unittest.TestCase):
 
         english = render_audio_info(info, "en", "WSL 2")
         german = render_audio_info(info, "de", "WSL 2")
+        self.assertIn("ALSA-Audiokarten: nicht verfügbar", german)
+        self.assertNotIn("ALSA cards:", german)
         self.assertIn("WSLg audio forwarding: socket not reachable", english)
         self.assertIn("do not identify Windows audio devices or models", english)
         self.assertIn("WSLg-Audio-Weiterleitung: Socket nicht erreichbar", german)

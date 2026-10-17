@@ -217,6 +217,7 @@ def render_audio_info(
     if language == "de":
         labels = {
             "section": "Audio",
+            "alsa_cards": "ALSA-Audiokarten",
             "no_cards": "Keine ALSA-Audiokarte erkannt.",
             "card": "Audiokarte",
             "driver": "Treiber",
@@ -236,6 +237,7 @@ def render_audio_info(
     else:
         labels = {
             "section": "Audio",
+            "alsa_cards": "ALSA cards",
             "no_cards": "No ALSA audio card detected.",
             "card": "Audio card",
             "driver": "Driver",
@@ -270,7 +272,10 @@ def render_audio_info(
             if stack.available is False
             else labels["unknown"]
         )
-        lines.append("{}: {}".format(stack.name, status))
+        stack_name = (
+            labels["alsa_cards"] if stack.name == "ALSA cards" else stack.name
+        )
+        lines.append("{}: {}".format(stack_name, status))
 
     if environment.startswith("WSL"):
         if info.wslg_socket is not None:
