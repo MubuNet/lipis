@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from modules.hardware import (
+    FilesystemInfo,
     HardwareInfo,
     collect_hardware_info,
     format_size,
@@ -54,21 +55,30 @@ class HardwareCollectionTests(unittest.TestCase):
             )
             with patch(
                 "modules.hardware.shutil.disk_usage",
-                return_value=DiskUsage(1000, 400, 600),
+                side_effect=[
+                    DiskUsage(1000, 400, 600),
+                    DiskUsage(2000, 800, 1200),
+                ],
             ):
                 info = collect_hardware_info(
                     cpu_info_path,
                     memory_info_path,
                     Path(directory),
+                    Path(directory) / "project",
                 )
 
         self.assertEqual(info.cpu_model, "Example CPU")
         self.assertEqual(info.logical_cpus, 2)
         self.assertEqual(info.memory_total_bytes, 16 * 1024 * 1024)
         self.assertEqual(info.memory_available_bytes, 8 * 1024 * 1024)
-        self.assertEqual(info.disk_total_bytes, 1000)
-        self.assertEqual(info.disk_used_bytes, 400)
-        self.assertEqual(info.disk_free_bytes, 600)
+        self.assertEqual(
+            info.root_filesystem,
+            FilesystemInfo(directory, 1000, 400, 600),
+        )
+        self.assertEqual(
+            info.current_filesystem,
+            FilesystemInfo(str(Path(directory) / "project"), 2000, 800, 1200),
+        )
         self.assertEqual(info.warnings, ())
 
     def test_reports_unavailable_sources_without_failing(self):
@@ -76,14 +86,15 @@ class HardwareCollectionTests(unittest.TestCase):
             missing = Path(directory) / "missing"
             with patch(
                 "modules.hardware.shutil.disk_usage",
-                side_effect=OSError("denied"),
+                side_effect=[OSError("denied"), OSError("denied")],
             ):
                 info = collect_hardware_info(missing, missing, missing)
 
         self.assertIsNone(info.cpu_model)
         self.assertIsNone(info.memory_total_bytes)
-        self.assertIsNone(info.disk_total_bytes)
-        self.assertEqual(len(info.warnings), 3)
+        self.assertIsNone(info.root_filesystem)
+        self.assertIsNone(info.current_filesystem)
+        self.assertEqual(len(info.warnings), 4)
         self.assertTrue(any("Could not read" in warning for warning in info.warnings))
 
     def test_formats_sizes_as_gibibytes(self):
@@ -95,13 +106,22 @@ class HardwareCollectionTests(unittest.TestCase):
             logical_cpus=4,
             memory_total_bytes=8 * 1024 ** 3,
             memory_available_bytes=4 * 1024 ** 3,
-            disk_total_bytes=16 * 1024 ** 3,
-            disk_used_bytes=8 * 1024 ** 3,
-            disk_free_bytes=8 * 1024 ** 3,
+            root_filesystem=FilesystemInfo("/", 16 * 1024 ** 3, 8 * 1024 ** 3, 8 * 1024 ** 3),
+            current_filesystem=FilesystemInfo(
+                "/mnt/c/project",
+                931 * 1024 ** 3,
+                807 * 1024 ** 3,
+                124 * 1024 ** 3,
+            ),
             warnings=(),
         )
         output = render_hardware_info(info, "de", "WSL 2")
         self.assertIn("CPU-Modell: Example CPU", output)
+        self.assertIn("Linux-Root-Dateisystem (/): /", output)
+        self.assertIn(
+            "Dateisystem des aktuellen Ordners: /mnt/c/project",
+            output,
+        )
         self.assertIn("Werte beziehen sich auf die WSL-Umgebung", output)
 
 

@@ -18,8 +18,8 @@
 
 - Liest Distributionsinformationen aus `/etc/os-release` und die Laufzeit aus `/proc/uptime`.
 - Zeigt Kernel, Architektur und Laufzeit an und erkennt WSL bzw. WSL 2.
-- Zeigt CPU-Modell und Anzahl logischer CPUs, verfügbaren/gesamten Arbeitsspeicher sowie belegten/freien Speicherplatz des Root-Dateisystems an.
-- Kennzeichnet Hardware- und Dateisystemwerte in WSL als Angaben der WSL-Umgebung.
+- Zeigt CPU-Modell und Anzahl logischer CPUs, verfügbaren/gesamten Arbeitsspeicher sowie belegten/freien Speicherplatz für Linux-Root (`/`) und das Dateisystem des aktuellen Arbeitsordners an.
+- Kennzeichnet Hardware- und Dateisystemwerte in WSL als Angaben der WSL-Umgebung. Bei einem Start aus `/mnt/c` wird das eingebundene Windows-Laufwerk `C:` getrennt vom Linux-Root-Dateisystem angezeigt.
 - Wählt Deutsch oder Englisch anhand der Systemsprache automatisch aus. Mit `--language de` oder `--language en` lässt sich die Auswahl überschreiben. Andere Sprachen verwenden Englisch.
 - Verwendet ausschließlich die Python-Standardbibliothek. Root-Rechte und System-Paketinstallationen sind nicht erforderlich.
 
@@ -54,7 +54,7 @@ lipis/
 ├── README.de.md         # Deutsche Dokumentation
 ├── modules/
 │   ├── os_info.py       # Diagnose von OS, Kernel und Laufzeit
-│   └── hardware.py      # Diagnose von CPU, Arbeitsspeicher und Root-Dateisystem
+│   └── hardware.py      # Diagnose von CPU, Arbeitsspeicher und Dateisystemen
 └── outputs/             # Geplante Berichterstellung
 ```
 

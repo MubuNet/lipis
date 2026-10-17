@@ -18,8 +18,8 @@
 
 - Reads distribution details from `/etc/os-release` and uptime from `/proc/uptime`.
 - Displays the kernel, architecture, uptime, and detects WSL/WSL 2.
-- Reports CPU model and logical CPU count, available/total memory, and used/free space on the root filesystem.
-- Labels WSL hardware and filesystem figures as values reported by the WSL environment.
+- Reports CPU model and logical CPU count, available/total memory, and used/free space for both Linux root (`/`) and the filesystem containing the current working directory.
+- Labels WSL hardware and filesystem figures as values reported by the WSL environment. When run from `/mnt/c`, the current-directory filesystem shows the mounted Windows `C:` volume separately from WSL's Linux root filesystem.
 - Automatically selects English or German from the system locale; use `--language en` or `--language de` to override it. Other locales fall back to English.
 - Uses only the Python standard library. No root privileges or system package installations are required.
 
@@ -54,7 +54,7 @@ lipis/
 ├── README.de.md         # German documentation
 ├── modules/
 │   ├── os_info.py       # OS, kernel, and uptime diagnostics
-│   └── hardware.py     # CPU, memory, and root filesystem diagnostics
+│   └── hardware.py      # CPU, memory, and filesystem diagnostics
 └── outputs/             # Planned report generation
 ```
 
