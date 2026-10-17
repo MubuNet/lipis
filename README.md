@@ -12,7 +12,7 @@
 
 **LIPIS** (Linux PostInstall Script) is a read-only diagnostic tool in development for Ubuntu and Debian newcomers.
 
-> **Project status — `0.1.0-dev`:** The command-line entry point and the OS/kernel, basic hardware, GPU/driver, Wi-Fi/Bluetooth, audio, network, and security diagnostics are implemented. The report generator is still planned.
+> **Project status — `0.1.0-dev`:** The command-line entry point, all seven diagnostic areas, and the optional privacy-filtered Markdown report are implemented.
 
 ## Current Features
 
@@ -26,10 +26,11 @@
 - Reports Bluetooth controllers, drivers, and power status without scanning for or listing paired devices.
 - Uses sysfs and optional preinstalled tools (`iw`, `nmcli`, `rfkill`, and `bluetoothctl`) for wireless diagnostics; it does not install software or require root access. WSL limitations are clearly identified.
 - Reports ALSA audio cards and drivers and checks optional PulseAudio/PipeWire clients without displaying speaker, microphone, or headset names. WSLg audio forwarding is reported separately and does not imply detection of Windows audio hardware.
-- Reports Linux network interface status, MAC/IP addresses, default gateways, and DNS servers from local system configuration only; it performs no active connectivity checks. These values appear in terminal output and are excluded from the planned Markdown report.
+- Reports Linux network interface status, MAC/IP addresses, default gateways, and DNS servers from local system configuration only; it performs no active connectivity checks. These values appear in terminal output and are excluded from the Markdown report.
 - Clearly labels WSL network values as the virtual Linux view and does not infer Windows network adapters.
 - Reports cached APT security-update candidates, locally available firewall status, AppArmor/SELinux, ASLR, Secure Boot, and kernel lockdown where detectable. Cached update data may be stale; LIPIS does not refresh package lists, require root, install packages, or change system settings. Unknown or inaccessible status is not reported as a security failure.
-- Labels WSL security values as Linux/WSL status and does not infer Windows host protections. Detailed security findings are intended for the planned report; network identifiers and configuration remain excluded from it.
+- Labels WSL security values as Linux/WSL status and does not infer Windows host protections. Detailed security findings are included in the report; network identifiers and configuration remain excluded from it.
+- Writes `lipis_report.md` in the current working directory when explicitly requested with `--report`; an existing report is replaced. The report includes detailed security findings but excludes network configuration, local IP/MAC addresses, DNS servers, gateways, Wi-Fi SSIDs, hostname, username, and the current-directory path.
 - Automatically selects English or German from the system locale; use `--language en` or `--language de` to override it. Other locales fall back to English.
 - Uses only the Python standard library. No root privileges or system package installations are required.
 
@@ -47,10 +48,11 @@ Use `python3 main.py --help` to see the available options.
 
 `python3 main.py --version` (or `-v`) displays the development version.
 
+Use `python3 main.py --report` to also write `lipis_report.md` in the current working directory. If that file already exists, it is replaced.
+
 ## Planned Features
 
 - A live terminal display with the MubuNet banner.
-- An optional Markdown report named `lipis_report.md`, saved in the directory from which LIPIS is started. Detailed security findings may be included; hostname, username, and network identifiers/configuration are omitted by default.
 - Optional presentation dependencies with a standard-library fallback.
 - Later OS-specific profiles, including clearly separated Kali-only diagnostics.
 
@@ -68,8 +70,8 @@ lipis/
 │   ├── wireless_bluetooth.py # Wi-Fi and Bluetooth diagnostics
 │   ├── audio.py         # Audio hardware and server diagnostics
 │   ├── network.py       # Local network configuration diagnostics
-│   └── security.py      # Read-only security posture diagnostics
-└── outputs/             # Planned report generation
+│   ├── security.py      # Read-only security posture diagnostics
+│   └── report.py        # Privacy-filtered Markdown report generation
 ```
 
 ## License

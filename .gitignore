@@ -44,6 +44,7 @@ coverage.xml
 /cache/
 *.log
 *.tmp
+lipis_report.md
 
 # Local databases and SQLite sidecars
 *.db

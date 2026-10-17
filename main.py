@@ -4,6 +4,7 @@ import argparse
 import locale
 import os
 import sys
+from pathlib import Path
 from typing import Dict, Optional, Sequence, Tuple
 
 from modules.audio import collect_audio_info, render_audio_info
@@ -11,6 +12,7 @@ from modules.gpu_driver import collect_gpu_info, render_gpu_info
 from modules.hardware import collect_hardware_info, render_hardware_info
 from modules.network import collect_network_info, render_network_info
 from modules.os_info import collect_system_info, render_system_info
+from modules.report import REPORT_FILENAME, write_markdown_report
 from modules.security import collect_security_info, render_security_info
 from modules.wireless_bluetooth import (
     collect_wireless_bluetooth_info,
@@ -25,11 +27,17 @@ TEXT = {
         "description": "Read-only Linux system diagnostics.",
         "language_help": "Display language.",
         "version": "Version",
+        "report_help": "Write a privacy-filtered Markdown report.",
+        "report_saved": "Report saved as {}".format(REPORT_FILENAME),
+        "report_error": "Could not write report: {}",
     },
     "de": {
         "description": "Nur lesende Linux-Systemdiagnose.",
         "language_help": "Sprache der Ausgabe.",
         "version": "Version",
+        "report_help": "Einen datenschutzgefilterten Markdown-Bericht schreiben.",
+        "report_saved": "Bericht gespeichert als {}".format(REPORT_FILENAME),
+        "report_error": "Bericht konnte nicht geschrieben werden: {}",
     },
 }
 
@@ -147,6 +155,11 @@ def build_parser(language: str) -> argparse.ArgumentParser:
             else "Versionsinformationen anzeigen."
         ),
     )
+    parser.add_argument(
+        "--report",
+        action="store_true",
+        help=text["report_help"],
+    )
     return parser
 
 
@@ -172,7 +185,7 @@ def parse_arguments(
     return parser.parse_args(provided_arguments), language
 
 
-def run_diagnostics(language: str) -> None:
+def run_diagnostics(language: str, create_report: bool = False) -> bool:
     """Collect and print all implemented read-only system diagnostics."""
     system_info = collect_system_info()
     hardware_info = collect_hardware_info()
@@ -185,23 +198,54 @@ def run_diagnostics(language: str) -> None:
     print("LIPIS - Linux PostInstall Script")
     print("{}: {}".format(TEXT[language]["version"], VERSION))
     print()
-    print(render_system_info(system_info, language))
-    print()
-    print(render_hardware_info(hardware_info, language, system_info.environment))
-    print()
-    print(render_gpu_info(gpu_info, language, system_info.environment))
-    print()
-    print(
-        render_wireless_bluetooth_info(
-            wireless_bluetooth_info, language, system_info.environment
-        )
+    system_section = render_system_info(system_info, language)
+    hardware_section = render_hardware_info(
+        hardware_info, language, system_info.environment
     )
+    gpu_section = render_gpu_info(gpu_info, language, system_info.environment)
+    wireless_section = render_wireless_bluetooth_info(
+        wireless_bluetooth_info, language, system_info.environment
+    )
+    audio_section = render_audio_info(audio_info, language, system_info.environment)
+    network_section = render_network_info(
+        network_info, language, system_info.environment
+    )
+    security_section = render_security_info(
+        security_info, language, system_info.environment
+    )
+    print(system_section)
     print()
-    print(render_audio_info(audio_info, language, system_info.environment))
+    print(hardware_section)
     print()
-    print(render_network_info(network_info, language, system_info.environment))
+    print(gpu_section)
     print()
-    print(render_security_info(security_info, language, system_info.environment))
+    print(wireless_section)
+    print()
+    print(audio_section)
+    print()
+    print(network_section)
+    print()
+    print(security_section)
+    if create_report:
+        try:
+            write_markdown_report(
+                (
+                    system_section,
+                    hardware_section,
+                    gpu_section,
+                    wireless_section,
+                    audio_section,
+                    security_section,
+                ),
+                language,
+                Path.cwd(),
+            )
+        except OSError as error:
+            print(TEXT[language]["report_error"].format(error), file=sys.stderr)
+            return False
+        print()
+        print(TEXT[language]["report_saved"])
+    return True
 
 
 def main(
@@ -214,8 +258,7 @@ def main(
         print("LIPIS {} {}".format(TEXT[language]["version"], VERSION))
         return 0
 
-    run_diagnostics(language)
-    return 0
+    return 0 if run_diagnostics(language, args.report) else 1
 
 
 if __name__ == "__main__":
