@@ -12,12 +12,14 @@
 
 **LIPIS** (Linux PostInstall Script) ist ein Read-Only-Diagnosewerkzeug für Linux-Einsteiger unter Ubuntu und Debian, das sich in Entwicklung befindet.
 
-> **Projektstatus — `0.1.0-dev`:** Der Kommandozeilen-Einstiegspunkt und die erste Diagnose für Betriebssystem und Kernel sind implementiert. Die übrigen Diagnosemodule und der Report-Generator sind noch geplant.
+> **Projektstatus — `0.1.0-dev`:** Der Kommandozeilen-Einstiegspunkt sowie die Basisdiagnosen für Betriebssystem/Kernel und Hardware sind implementiert. Die übrigen Diagnosemodule und der Report-Generator sind noch geplant.
 
 ## Bereits verfügbar
 
 - Liest Distributionsinformationen aus `/etc/os-release` und die Laufzeit aus `/proc/uptime`.
 - Zeigt Kernel, Architektur und Laufzeit an und erkennt WSL bzw. WSL 2.
+- Zeigt CPU-Modell und Anzahl logischer CPUs, verfügbaren/gesamten Arbeitsspeicher sowie belegten/freien Speicherplatz des Root-Dateisystems an.
+- Kennzeichnet Hardware- und Dateisystemwerte in WSL als Angaben der WSL-Umgebung.
 - Wählt Deutsch oder Englisch anhand der Systemsprache automatisch aus. Mit `--language de` oder `--language en` lässt sich die Auswahl überschreiben. Andere Sprachen verwenden Englisch.
 - Verwendet ausschließlich die Python-Standardbibliothek. Root-Rechte und System-Paketinstallationen sind nicht erforderlich.
 
@@ -51,7 +53,8 @@ lipis/
 ├── README.md            # Englische Dokumentation
 ├── README.de.md         # Deutsche Dokumentation
 ├── modules/
-│   └── os_info.py       # Implementierte Diagnose von OS, Kernel und Laufzeit
+│   ├── os_info.py       # Diagnose von OS, Kernel und Laufzeit
+│   └── hardware.py      # Diagnose von CPU, Arbeitsspeicher und Root-Dateisystem
 └── outputs/             # Geplante Berichterstellung
 ```
 

@@ -6,6 +6,7 @@ import os
 import sys
 from typing import Dict, Optional, Sequence, Tuple
 
+from modules.hardware import collect_hardware_info, render_hardware_info
 from modules.os_info import collect_system_info, render_system_info
 
 
@@ -154,12 +155,15 @@ def parse_arguments(
 
 
 def run_diagnostics(language: str) -> None:
-    info = collect_system_info()
+    system_info = collect_system_info()
+    hardware_info = collect_hardware_info()
     print(BANNER)
     print("LIPIS - Linux PostInstall Script")
     print("{}: {}".format(TEXT[language]["version"], VERSION))
     print()
-    print(render_system_info(info, language))
+    print(render_system_info(system_info, language))
+    print()
+    print(render_hardware_info(hardware_info, language, system_info.environment))
 
 
 def main(
